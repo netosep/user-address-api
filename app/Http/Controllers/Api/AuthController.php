@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Exceptions\InvalidCredentialsException;
-use App\Http\Exceptions\ValidationException;
 use App\Http\Requests\Auth\LoginFormRequest;
+use App\Http\Requests\Auth\RegisterFormRequest;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-/**
- * @OA\Info(title="User Addresses API", version="1.0")
- */
-class AuthController extends Controller
+class AuthController extends BaseController
 {
     /**
      * @OA\Post(
@@ -30,35 +27,23 @@ class AuthController extends Controller
      *   @OA\Response(
      *     response=200,
      *     description="AccessToken Response",
-     *     @OA\JsonContent(
-     *       type="object",
-     *       ref="#/components/schemas/TokenResponse"
-     *      )
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/TokenResponse")
      *   ),
      *   @OA\Response(
      *     response=401,
      *     description="Invalid credentials",
-     *     @OA\JsonContent(
-     *       type="object",
-     *       ref="#/components/schemas/InvalidCredentialsException"
-     *     )
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/InvalidCredentialsException")
      *   ),
      *   @OA\Response(
      *     response=422,
      *     description="Validation error",
-     *     @OA\JsonContent(
-     *       type="object",
-     *       ref="#/components/schemas/ValidationException"
-     *     )
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/ValidationException")
      *   ),
      * )
      */
     public function auth(Request $request)
     {
-        $validator = $this->makeValidator(LoginFormRequest::class, $request);
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
-        }
+        $this->validateRequest(LoginFormRequest::class, $request);
 
         $credentials = $request->only(['email', 'password']);
 
@@ -69,7 +54,7 @@ class AuthController extends Controller
         }
 
         # delete old tokens
-        // $user->tokens()->delete();
+        $user->tokens()->delete();
 
         $expiresAt = now()->addWeek(); // 7 days
         $token = $user->createToken(name: 'user-token', expiresAt: $expiresAt)->plainTextToken;
@@ -77,14 +62,84 @@ class AuthController extends Controller
         return $this->tokenResponse($token, $expiresAt);
     }
 
+    /**
+     * @OA\Post(
+     *   tags={"Auth"},
+     *   path="/api/register",
+     *   summary="Register",
+     *   @OA\RequestBody(
+     *     @OA\JsonContent(
+     *       type="object",
+     *       @OA\Property(property="name", type="string", example="John Doe"),
+     *       @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
+     *       @OA\Property(property="password", type="string", example="12345"),
+     *       @OA\Property(property="password_confirmation", type="string", example="12345")
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=201,
+     *     description="AccessToken Response",
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/TokenResponse")
+     *   ),
+     *   @OA\Response(
+     *     response=422,
+     *     description="Validation error",
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/ValidationException")
+     *   ),
+     * )
+     */
     public function register(Request $request)
     {
-        // do something
+        $this->validateRequest(RegisterFormRequest::class, $request);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' =>  Hash::make($request->password),
+        ]);
+
+        $expiresAt = now()->addWeek(); // 7 days
+        $token = $user->createToken(name: 'user-token', expiresAt: $expiresAt)->plainTextToken;
+
+        return $this->tokenResponse($token, $expiresAt, 'User register successfully', JsonResponse::HTTP_CREATED);
+    }
+
+    /**
+     * @OA\Post(
+     *   tags={"Auth"},
+     *   path="/api/logout",
+     *   summary="Logout",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\Response(
+     *     response=200,
+     *     description="Logout Response",
+     *     @OA\JsonContent(
+     *       type="object",
+     *       @OA\Property(property="success", type="boolean", default=true, example=true),
+     *       @OA\Property(property="message", type="string", example="Successfully logged out"),
+     *       @OA\Property(property="code", type="integer", example=200)
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=401,
+     *     description="Unauthenticated",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *     )
+     *   )
+     * )
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return $this->jsonResponse(message: 'Successfully logged out');
     }
 
     /**
      * @OA\Schema(
      *   schema="TokenResponse",
+     *   @OA\Property(property="message", type="string"),
      *   @OA\Property(property="success", type="boolean", example=true),
      *   @OA\Property(property="code", type="integer", example=200),
      *   @OA\Property(
@@ -96,7 +151,7 @@ class AuthController extends Controller
      *   )
      * )
      */
-    protected function tokenResponse(string $token, \DateTime $expiresIn)
+    public function tokenResponse(string $token, \DateTime $expiresIn, string $message = null, int $code = JsonResponse::HTTP_OK)
     {
         $data = [
             'access_token' => $token,
@@ -104,18 +159,6 @@ class AuthController extends Controller
             'expires_in' => $expiresIn->getTimestamp(),
         ];
 
-        return $this->jsonResponse($data);
-    }
-
-    public function me(Request $request)
-    {
-        return $this->jsonResponse(['me' => $request->user()]);
-    }
-
-    public function logout(Request $request)
-    {
-        $request->user()->currentAccessToken()->delete();
-
-        return $this->jsonResponse(message: 'Successfully logged out');
+        return $this->jsonResponse($data, $message, $code);
     }
 }

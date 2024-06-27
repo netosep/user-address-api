@@ -7,6 +7,17 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @OA\Schema(
+ *   schema="User",
+ *   @OA\Property(property="id", type="integer", example=999),
+ *   @OA\Property(property="name", type="string", example="Joe Snow"),
+ *   @OA\Property(property="email", type="string", example="joe@example.com"),
+ *   @OA\Property(property="created_at", type="datetime"),
+ *   @OA\Property(property="updated_at", type="datetime"),
+ *   @OA\Property(property="addresses", type="array", @OA\Items(ref="#/components/schemas/Address"))
+ * )
+ */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -30,5 +41,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
     }
 }

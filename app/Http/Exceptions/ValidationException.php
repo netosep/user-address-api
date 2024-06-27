@@ -19,10 +19,7 @@ class ValidationException extends BaseValidationException
      *     @OA\Property(
      *       property="field_name",
      *       type="array",
-     *       @OA\Items(
-     *         type="string",
-     *         example="The field_name is required."
-     *       )
+     *       @OA\Items(type="string", example="The field_name is required.")
      *     )
      *   )
      * )

@@ -19,7 +19,7 @@ class InvalidCredentialsException extends BadRequestHttpException
     {
         return response()->json([
             'success' => false,
-            'message' => empty($this->message) ? 'Invalid credentials' : $this->message,
+            'message' => $this->getMessage() ?: 'Invalid credentials',
             'code' => JsonResponse::HTTP_UNAUTHORIZED,
         ], JsonResponse::HTTP_UNAUTHORIZED);
     }

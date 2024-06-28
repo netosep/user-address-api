@@ -16,13 +16,19 @@
 
 ### Passos de Instalação
 
-1. Copie o arquivo de ambiente e construa o container da aplicação utilizando o [Docker](https://www.docker.com/):
+1. Clone o repositório para a sua máquina local:
+
+    ```bash
+    git clone https://github.com/netosep/user-address-api.git && cd user-address-api
+    ```
+
+2. Copie o arquivo de ambiente e construa o container da aplicação utilizando o [Docker](https://www.docker.com/):
 
     ```bash
     cp .env.example .env && docker-compose up --build -d
     ```
 
-2. Aguarde os containers subirem, execute as migrations e gere a key da aplicação com o seguinte comando:
+3. Instale as dependencias, suba as migrations e gere a key da aplicação executando o comando:
 
     ```bash
     docker-compose exec php-fpm composer install-app
@@ -30,7 +36,7 @@
 
 ## :dizzy: Acesso
 
-Depois de executar os passos de instalação, a aplicação estará acessível em: [http://localhost:8080](http://localhost:8080)
+#### Após de executar os passos de instalação, a aplicação estará acessível em: [http://localhost:8080](http://localhost:8080)
 
 ## :book: Documentação da API
 

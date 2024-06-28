@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Exceptions\BadRequestException;
 use App\Http\Exceptions\ValidationException;
 use App\Http\Requests\FormRequest;
 use App\Traits\FindModelTrait;
@@ -60,12 +61,26 @@ class BaseController extends Controller
         return Validator::make(is_array($request) ? $request : $request->all(), $formRequest->rules());
     }
 
-    public function validateRequest(string $formRequest, array|Request $request): void
+    public function validateRequest(string $formRequest, array|Request $request): ValidationValidator
     {
         $validator = $this->makeValidator($formRequest, $request);
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
+
+        return $validator;
+    }
+
+    public function validateExistsFieldRequest(Request $request, ValidationValidator $validator): bool
+    {
+        $ruleKeys = array_keys($validator->getRules());
+        $requestKeys = array_keys($request->all());
+
+        if (empty(array_intersect($ruleKeys, $requestKeys))) {
+            throw new BadRequestException('Nothing to update');
+        }
+
+        return true;
     }
 
     public function transformPaginate(LengthAwarePaginator $paginator): array

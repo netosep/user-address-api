@@ -25,7 +25,7 @@
 2. Aguarde os containers subirem, execute as migrations e gere a key da aplicação com o seguinte comando:
 
     ```bash
-    docker-compose exec php-fpm composer init-app
+    docker-compose exec php-fpm composer install-app
     ```
 
 ## :dizzy: Acesso

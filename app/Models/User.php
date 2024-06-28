@@ -15,7 +15,15 @@ use Laravel\Sanctum\HasApiTokens;
  *   @OA\Property(property="email", type="string", example="joe@example.com"),
  *   @OA\Property(property="created_at", type="datetime"),
  *   @OA\Property(property="updated_at", type="datetime"),
- *   @OA\Property(property="addresses", type="array", @OA\Items(ref="#/components/schemas/Address"))
+ *   @OA\Property(
+ *     property="addresses",
+ *     type="object",
+ *     @OA\Property(property="current_page", type="integer", example=1),
+ *     @OA\Property(property="total", type="integer", example=1),
+ *     @OA\Property(property="per_page", type="integer", example=1),
+ *     @OA\Property(property="last_page", type="integer", example=1),
+ *     @OA\Property(property="data", type="array",  @OA\Items(ref="#/components/schemas/Address"))
+ *   )
  * )
  */
 class User extends Authenticatable

@@ -911,14 +911,14 @@
             },
             "BadRequestException": {
                 "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Bad request"
+                    },
                     "success": {
                         "type": "boolean",
                         "default": false,
                         "example": false
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Bad request"
                     },
                     "code": {
                         "type": "integer",
@@ -929,14 +929,14 @@
             },
             "InvalidCredentialsException": {
                 "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Invalid credentials"
+                    },
                     "success": {
                         "type": "boolean",
                         "default": false,
                         "example": false
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Invalid credentials"
                     },
                     "code": {
                         "type": "integer",
@@ -947,14 +947,14 @@
             },
             "NotFoundException": {
                 "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Item not found"
+                    },
                     "success": {
                         "type": "boolean",
                         "default": false,
                         "example": false
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Item not found"
                     },
                     "code": {
                         "type": "integer",
@@ -965,14 +965,14 @@
             },
             "UnauthorizedException": {
                 "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Unauthorized request"
+                    },
                     "success": {
                         "type": "boolean",
                         "default": false,
                         "example": false
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Unauthorized request"
                     },
                     "code": {
                         "type": "integer",
@@ -983,14 +983,14 @@
             },
             "ValidationException": {
                 "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Validation error"
+                    },
                     "success": {
                         "type": "boolean",
                         "default": false,
                         "example": false
-                    },
-                    "message": {
-                        "type": "string",
-                        "example": "Validation error"
                     },
                     "code": {
                         "type": "integer",

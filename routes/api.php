@@ -14,7 +14,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(UserController::class)
         ->prefix('/user')
         ->group(function () {
-            Route::get('/me', 'me')->name('me');
+            Route::get('/', 'index')->name('index');
+            Route::put('/', 'update')->name('update');
+            Route::delete('/', 'destroy')->name('destroy');
+
             Route::apiResource('address', AddressController::class);
         });
 });

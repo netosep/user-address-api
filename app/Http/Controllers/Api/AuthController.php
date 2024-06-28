@@ -122,7 +122,7 @@ class AuthController extends BaseController
      *   ),
      *   @OA\Response(
      *     response=401,
-     *     description="Unauthenticated",
+     *     description="Unauthenticated response",
      *     @OA\JsonContent(
      *       @OA\Property(property="message", type="string", example="Unauthenticated.")
      *     )

@@ -133,6 +133,11 @@ class AddressController extends BaseController
      *     @OA\JsonContent(
      *       @OA\Property(property="message", type="string", example="Unauthenticated.")
      *     )
+     *   ),
+     *   @OA\Response(
+     *     response=422,
+     *     description="Validation error response",
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/ValidationException")
      *   )
      * )
      */
@@ -177,17 +182,28 @@ class AddressController extends BaseController
      *     )
      *   ),
      *   @OA\Response(
+     *     response=400,
+     *     description="Bad request response",
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/BadRequestException")
+     *   ),
+     *   @OA\Response(
      *     response=401,
      *     description="Unauthenticated response",
      *     @OA\JsonContent(
      *       @OA\Property(property="message", type="string", example="Unauthenticated.")
      *     )
+     *   ),
+     *   @OA\Response(
+     *     response=422,
+     *     description="Validation error response",
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/ValidationException")
      *   )
      * )
      */
     public function update(Request $request, string $id)
     {
-        $this->validateRequest(AddressUpdateFormRequest::class, $request);
+        $validator = $this->validateRequest(AddressUpdateFormRequest::class, $request);
+        $this->validateExistsFieldRequest($request, $validator);
 
         $address = $this->findOrFail(Address::class, $id, $request->user()->id);
         $address->fill($request->all());

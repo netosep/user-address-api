@@ -169,6 +169,16 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "description": "Validation error response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationException"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -299,6 +309,16 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Bad request response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestException"
+                                }
+                            }
+                        }
+                    },
                     "401": {
                         "description": "Unauthenticated response",
                         "content": {
@@ -311,6 +331,16 @@
                                         }
                                     },
                                     "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationException"
                                 }
                             }
                         }
@@ -543,7 +573,7 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated",
+                        "description": "Unauthenticated response",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -566,13 +596,13 @@
                 ]
             }
         },
-        "/api/user/me": {
+        "/api/user": {
             "get": {
                 "tags": [
                     "User"
                 ],
-                "summary": "User information",
-                "operationId": "23a655d8871ff4920d42e22aad9c27c0",
+                "summary": "Show User information",
+                "operationId": "ef3192335324c07faff67807a2e8a2f8",
                 "responses": {
                     "200": {
                         "description": "User information response",
@@ -599,7 +629,171 @@
                         }
                     },
                     "401": {
-                        "description": "Unauthenticated",
+                        "description": "Unauthenticated response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update User information",
+                "operationId": "5eecd6f62690794e94b1167a814a9059",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Update User information response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User updated successfully"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "default": true,
+                                            "example": true
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "result": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "email": {
+                                                    "type": "string",
+                                                    "example": "john.doe@example.com"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestException"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationException"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Delete current User",
+                "operationId": "44a44e9bd1b21f1f742cb29b3e2d63d0",
+                "responses": {
+                    "200": {
+                        "description": "User deleted response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Item deleted successfully"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "default": true,
+                                            "example": true
+                                        },
+                                        "code": {
+                                            "type": "integer",
+                                            "example": 200
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated response",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -654,6 +848,24 @@
                             }
                         },
                         "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "BadRequestException": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": false
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Bad request"
+                    },
+                    "code": {
+                        "type": "integer",
+                        "example": 400
                     }
                 },
                 "type": "object"
@@ -804,6 +1016,20 @@
                     "zip_code": {
                         "type": "string",
                         "example": "33020"
+                    }
+                },
+                "type": "object"
+            },
+            "UserRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "John Doe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
                     }
                 },
                 "type": "object"

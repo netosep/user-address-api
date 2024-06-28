@@ -1,6 +1,8 @@
 {
-    "name": "user-address-api/user-address-api",
+    "name": "netosep/user-address-api",
     "type": "project",
+    "description": "Simple RestAPI made with Laravel 11",
+    "license": "proprietary",
     "require": {
         "php": "^8.2",
         "darkaonline/l5-swagger": "^8.6",
@@ -29,15 +31,9 @@
         }
     },
     "scripts": {
-        "init-app": [
-            "php artisan key:generate --ansi",
-            "php artisan migrate --force"
+        "install-app": [
+            "./resources/install-app.sh"
         ]
-    },
-    "extra": {
-        "laravel": {
-            "dont-discover": []
-        }
     },
     "config": {
         "optimize-autoloader": true,

@@ -150,7 +150,7 @@ class AddressController extends BaseController
     }
 
     /**
-     * @OA\PUT(
+     * @OA\Put(
      *   tags={"User Address"},
      *   path="/api/user/address/{id}",
      *   summary="Update User Address",

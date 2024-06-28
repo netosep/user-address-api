@@ -13,6 +13,7 @@ class AuthControllerTest extends TestCase
     const LOGIN_ENDPOINT = '/api/login';
     const REGISTER_ENDPOINT = '/api/register';
     const LOGOUT_ENDPOINT = '/api/logout';
+    const CHANGE_PASSWORD_ENDPOINT = '/api/user/change-password';
 
     private AuthController $controller;
 
@@ -258,6 +259,83 @@ class AuthControllerTest extends TestCase
             'tokenable_id' => $user->id,
             'name' => 'user-token',
         ]);
+    }
+
+    public function testChangePasswordSuccessfully()
+    {
+        $user = $this->createUser(['password' => Hash::make('old_password')]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(self::CHANGE_PASSWORD_ENDPOINT, [
+            'password' => 'old_password',
+            'new_password' => 'new_password',
+            'confirm_new_password' => 'new_password',
+        ]);
+
+        $response->assertStatus(JsonResponse::HTTP_OK);
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Password changed successfully',
+        ]);
+
+        $this->assertTrue(Hash::check('new_password', $user->fresh()->password));
+    }
+
+    public function testChangePasswordWithIncorrectCurrentPassword()
+    {
+        $user = $this->createUser(['password' => Hash::make('old_password')]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(self::CHANGE_PASSWORD_ENDPOINT, [
+            'password' => 'incorrect_password',
+            'new_password' => 'new_password',
+            'confirm_new_password' => 'new_password',
+        ]);
+
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+        $response->assertJson(['message' => 'Invalid credentials']);
+    }
+
+    public function testChangePasswordUnauthenticated()
+    {
+        $response = $this->postJson(self::CHANGE_PASSWORD_ENDPOINT, [
+            'password' => 'old_password',
+            'new_password' => 'new_password',
+            'confirm_new_password' => 'new_password'
+        ]);
+
+        $response->assertStatus(JsonResponse::HTTP_UNAUTHORIZED);
+        $response->assertJson(['message' => 'Unauthenticated.']);
+    }
+
+    public function testChangePasswordWithValidationError()
+    {
+        $user = $this->createUser();
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(self::CHANGE_PASSWORD_ENDPOINT, []);
+
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonStructure(['fields' => ['password', 'new_password']]);
+    }
+
+    public function testChangePasswordWithNewPasswordConfirmationMismatch()
+    {
+        $user = $this->createUser(['password' => Hash::make('old_password')]);
+
+        $this->actingAs($user);
+
+        $response = $this->postJson(self::CHANGE_PASSWORD_ENDPOINT, [
+            'password' => 'old_password',
+            'new_password' => 'new_password',
+            'confirm_new_password' => 'mismatching_new_password',
+        ]);
+
+        $response->assertStatus(JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+        $response->assertJsonStructure(['fields' => ['confirm_new_password']]);
     }
 
     public function testTokenResponseSuccessStatusMessageNull()

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\Validator as ValidatorFacade;
 use Tests\TestCase;
 use Tests\Unit\Http\Controllers\Mock\MockFormRequest;
 
@@ -153,6 +154,27 @@ class BaseControllerTest extends TestCase
         $request = new Request([]);
 
         $this->controller->validateRequest(MockFormRequest::class, $request);
+    }
+
+    public function testValidateExistsFieldRequestWithIncorrectDataTypesReturnsTrue()
+    {
+        $request = Request::create('/test', 'POST', ['field' => 123]);
+
+        ValidatorFacade::shouldReceive('make')
+            ->once()->andReturnUsing(function ($data, $rules) {
+                $validator = \Mockery::mock(Validator::class);
+                $validator->shouldReceive('fails')->andReturn(false);
+                $validator->shouldReceive('getRules')->andReturn($rules);
+
+                return $validator;
+            });
+
+        $class = MockFormRequest::class;
+        $validator = $this->controller->makeValidator($class, $request);
+
+        $result = $this->controller->validateExistsFieldRequest($request, $validator);
+
+        $this->assertTrue($result);
     }
 
     public function testTransformPaginateReturnsDataAsArray()

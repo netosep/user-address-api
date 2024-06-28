@@ -36,9 +36,6 @@ WORKDIR /var/www/app
 # Copy project files
 COPY --chown=user-address-api:user-address-api . .
 
-# Install dependencies
-RUN composer install --no-dev
-
 # Expose port and start php-fpm
 EXPOSE 9000
 CMD ["php-fpm"]

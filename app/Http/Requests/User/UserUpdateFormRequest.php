@@ -24,9 +24,6 @@ class UserUpdateFormRequest extends FormRequest
                 'sometimes', 'required', 'email', 'max:255',
                 Rule::unique('users', 'email')->ignore($userId),
             ],
-            // 'new_password' => 'sometimes|required|string|min:5|max:255',
-            // 'password' => 'required_with:new_password|string|min:5|max:255',
-            // 'confirm_new_password' => 'required_with:new_password|string|min:5|max:255|same:new_password',
         ];
     }
 }

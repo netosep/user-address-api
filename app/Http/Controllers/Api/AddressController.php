@@ -143,12 +143,12 @@ class AddressController extends BaseController
      */
     public function store(Request $request)
     {
-        $this->validateRequest(AddressStoreFormRequest::class, $request);
-
         $user = $request->user();
+        $validator = $this->validateRequest(AddressStoreFormRequest::class, $request);
+
         $address = new Address();
         $address->user_id = $user->id;
-        $address->fill($request->all());
+        $address->fill($validator->valid());
         $address->save();
 
         return $this->jsonResponse($address, 'Address created successfully', JsonResponse::HTTP_CREATED);

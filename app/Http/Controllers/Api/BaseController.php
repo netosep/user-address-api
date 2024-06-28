@@ -33,7 +33,7 @@ class BaseController extends Controller
 {
     use FindModelTrait;
 
-    const ITEMS_PER_PAGE = 10;
+    public const ITEMS_PER_PAGE = 10;
 
     public function jsonResponse(mixed $result = null, string $message = null, int $code = JsonResponse::HTTP_OK): JsonResponse
     {
@@ -53,7 +53,7 @@ class BaseController extends Controller
 
     public function makeValidator(string $class, array|Request $request): ValidationValidator
     {
-        $formRequest = new $class;
+        $formRequest = new $class();
         if (!$formRequest instanceof FormRequest) {
             throw new \InvalidArgumentException('Class must be instance of FormRequest');
         }

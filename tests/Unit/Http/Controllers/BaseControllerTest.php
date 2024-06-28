@@ -107,8 +107,7 @@ class BaseControllerTest extends TestCase
 
     public function testValidateRequestWithValidData()
     {
-        $formRequest = new class extends FormRequest
-        {
+        $formRequest = new class () extends FormRequest {
             public function rules(): array
             {
                 return ['name' => 'required|string'];

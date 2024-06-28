@@ -10,10 +10,10 @@ use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
 {
-    const LOGIN_ENDPOINT = '/api/login';
-    const REGISTER_ENDPOINT = '/api/register';
-    const LOGOUT_ENDPOINT = '/api/logout';
-    const CHANGE_PASSWORD_ENDPOINT = '/api/user/change-password';
+    public const LOGIN_ENDPOINT = '/api/login';
+    public const REGISTER_ENDPOINT = '/api/register';
+    public const LOGOUT_ENDPOINT = '/api/logout';
+    public const CHANGE_PASSWORD_ENDPOINT = '/api/user/change-password';
 
     private AuthController $controller;
 

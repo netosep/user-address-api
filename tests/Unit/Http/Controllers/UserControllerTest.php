@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class UserControllerTest extends TestCase
 {
-    const USER_ENDPOINT = '/api/user';
+    public const USER_ENDPOINT = '/api/user';
 
     public function testAuthenticatedUserCanRetrieveInformationWithAddresses()
     {

@@ -10,9 +10,8 @@ use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    const GUARD_API = 'sanctum';
-
     use RefreshDatabase;
+    public const GUARD_API = 'sanctum';
 
     public function createUser(array $attributes = [], Model $parent = null): User
     {

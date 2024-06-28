@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class AddressControllerTest extends TestCase
 {
-    const USER_ADDRESS_ENDPOINT = '/api/user/address';
+    public const USER_ADDRESS_ENDPOINT = '/api/user/address';
 
     public function testIndexWithoutFilters()
     {

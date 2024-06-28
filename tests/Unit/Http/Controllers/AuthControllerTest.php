@@ -3,9 +3,6 @@
 namespace Tests\Unit\Http\Controllers;
 
 use App\Http\Controllers\Api\AuthController;
-use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
@@ -13,16 +10,21 @@ use Tests\TestCase;
 
 class AuthControllerTest extends TestCase
 {
-    use WithFaker;
-    use DatabaseTransactions;
-
     const LOGIN_ENDPOINT = '/api/login';
     const REGISTER_ENDPOINT = '/api/register';
     const LOGOUT_ENDPOINT = '/api/logout';
 
+    private AuthController $controller;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->controller = new AuthController();
+    }
+
     public function testAuthWithValidCredentials()
     {
-        $user = User::factory()->create(['password' => Hash::make('password123')]);
+        $user =  $this->createUser(['password' => Hash::make('password123')]);
 
         $response = $this->postJson(self::LOGIN_ENDPOINT, [
             'email' => $user->email,
@@ -58,7 +60,7 @@ class AuthControllerTest extends TestCase
 
     public function testAuthWithInvalidPassword()
     {
-        $user = User::factory()->create(['password' => Hash::make('password123')]);
+        $user =  $this->createUser(['password' => Hash::make('password123')]);
 
         $response = $this->postJson(self::LOGIN_ENDPOINT, [
             'email' => $user->email,
@@ -95,7 +97,7 @@ class AuthControllerTest extends TestCase
 
     public function testAuthWithEmptyPassword()
     {
-        $user = User::factory()->create(['password' => Hash::make('password123')]);
+        $user =  $this->createUser(['password' => Hash::make('password123')]);
 
         $response = $this->postJson(self::LOGIN_ENDPOINT, [
             'email' => $user->email,
@@ -133,7 +135,7 @@ class AuthControllerTest extends TestCase
 
     public function testRegisterWithExistingEmail()
     {
-        User::factory()->create([
+        $this->createUser([
             'email' => 'existing@example.com',
             'password' => Hash::make('password'),
         ]);
@@ -184,7 +186,7 @@ class AuthControllerTest extends TestCase
 
     public function testLogoutSuccess()
     {
-        $user = User::factory()->create();
+        $user =  $this->createUser();
         $token = $user->createToken('user-token')->plainTextToken;
 
         $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])->postJson(self::LOGOUT_ENDPOINT);
@@ -224,7 +226,7 @@ class AuthControllerTest extends TestCase
 
     public function testLogoutExpiredToken()
     {
-        $user = User::factory()->create();
+        $user =  $this->createUser();
         $token = $user->createToken('user-token', expiresAt: now()->subWeek())->plainTextToken;
 
         $response = $this->withHeaders(['Authorization' => 'Bearer ' . $token])->postJson(self::LOGOUT_ENDPOINT);
@@ -241,7 +243,7 @@ class AuthControllerTest extends TestCase
 
     public function testLogoutRevokedToken()
     {
-        $user = User::factory()->create();
+        $user =  $this->createUser();
         $token = $user->createToken('user-token')->plainTextToken;
 
         $user->tokens()->first()->delete();
@@ -260,18 +262,17 @@ class AuthControllerTest extends TestCase
 
     public function testTokenResponseSuccessStatusMessageNull()
     {
-        $controller = new AuthController();
         $token = '1|xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
         $expiresIn = new \DateTime('2023-01-01 00:00:00');
 
-        $response = $controller->tokenResponse($token, $expiresIn);
+        $response = $this->controller->tokenResponse($token, $expiresIn);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(JsonResponse::HTTP_OK, $response->getStatusCode());
 
         $expected = [
             'success' => true,
-            'code' => 200,
+            'code' => JsonResponse::HTTP_OK,
             'result' => [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
@@ -283,16 +284,15 @@ class AuthControllerTest extends TestCase
 
     public function testTokenResponseSuccessStatusMessageProvided()
     {
-        $controller = new AuthController();
         $token = '1|yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy';
         $expiresIn = new \DateTime('2024-01-01 00:00:00');
         $message = 'Token generated successfully';
 
-        $response = $controller->tokenResponse($token, $expiresIn, $message);
+        $response = $this->controller->tokenResponse($token, $expiresIn, $message);
 
         $expected = [
             'success' => true,
-            'code' => 200,
+            'code' => JsonResponse::HTTP_OK,
             'message' => $message,
             'result' => [
                 'access_token' => $token,

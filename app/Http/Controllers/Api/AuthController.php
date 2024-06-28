@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Exceptions\InvalidCredentialsException;
+use App\Http\Requests\Auth\ChangePasswordFormRequest;
 use App\Http\Requests\Auth\LoginFormRequest;
 use App\Http\Requests\Auth\RegisterFormRequest;
 use App\Models\User;
@@ -68,13 +69,7 @@ class AuthController extends BaseController
      *   path="/api/register",
      *   summary="Register",
      *   @OA\RequestBody(
-     *     @OA\JsonContent(
-     *       type="object",
-     *       @OA\Property(property="name", type="string", example="John Doe"),
-     *       @OA\Property(property="email", type="string", format="email", example="john.doe@example.com"),
-     *       @OA\Property(property="password", type="string", example="12345"),
-     *       @OA\Property(property="password_confirmation", type="string", example="12345")
-     *     )
+     *     @OA\JsonContent(type="object",  ref="#/components/schemas/RegisterRequest")
      *   ),
      *   @OA\Response(
      *     response=201,
@@ -134,6 +129,54 @@ class AuthController extends BaseController
         $request->user()->currentAccessToken()->delete();
 
         return $this->jsonResponse(message: 'Successfully logged out');
+    }
+
+    /**
+     * @OA\Post(
+     *   tags={"Auth"},
+     *   path="/api/change-password",
+     *   summary="Change User Password",
+     *   security={{"bearerAuth":{}}},
+     *   @OA\RequestBody(
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/ChangePasswordRequest")
+     *   ),
+     *   @OA\Response(
+     *     response=200,
+     *     description="Change User Password Response",
+     *     @OA\JsonContent(
+     *       type="object",
+     *       @OA\Property(property="success", type="boolean", default=true, example=true),
+     *       @OA\Property(property="message", type="string", example="Password changed successfully"),
+     *       @OA\Property(property="code", type="integer", example=200)
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=401,
+     *     description="Unauthenticated response",
+     *     @OA\JsonContent(
+     *       @OA\Property(property="message", type="string", example="Unauthenticated.")
+     *     )
+     *   ),
+     *   @OA\Response(
+     *     response=422,
+     *     description="Validation error",
+     *     @OA\JsonContent(type="object", ref="#/components/schemas/ValidationException")
+     *   ),
+     * )
+     */
+    public function changePassword(Request $request)
+    {
+        $this->validateRequest(ChangePasswordFormRequest::class, $request);
+
+        $user = $request->user();
+        if (!Hash::check($request->password, $user->password)) {
+            throw new InvalidCredentialsException();
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return $this->jsonResponse(message: 'Password changed successfully');
     }
 
     /**

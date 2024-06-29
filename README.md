@@ -34,7 +34,7 @@
     docker-compose exec php-fpm composer install-app
     ```
 > [!NOTE]
-> _Para posteriormente remover totalmente o container criado, redes, volumes e imagens execute `docker-compose down --rmi all`_
+> _Para posteriormente remover totalmente o container criado, redes, volumes e imagens, execute `docker-compose down --rmi all` dentro da pasta do projeto_
 
 ## :dizzy: Acesso
 

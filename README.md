@@ -53,7 +53,6 @@ docker-compose exec php-fpm php artisan test
 ## :file_folder: Estrutura do Projeto
 - `app/` - Contém os arquivos principais da aplicação.
 - `database/` - Contém as migrações e seeders do banco de dados.
-- `resources/` - Contém as views e outros recursos de frontend.
 - `routes/` - Contém as definições de rotas da aplicação.
 - `tests/` - Contém os testes automatizados.
 
